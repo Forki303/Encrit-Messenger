@@ -5,7 +5,12 @@
 <h1 align="center">Encrit Messenger</h1>
 
 <p align="center">
-  Простой и зашифрованный мессенджер
+  Your messages. Your rules.
+</p>
+
+<p align="center">
+  <a href="README.md"><img src="https://img.shields.io/badge/🇷🇺-Русский-blue" alt="Русский"></a>
+  <a href="README_EN.md"><img src="https://img.shields.io/badge/🇬🇧-English-green" alt="English"></a>
 </p>
 
 ## Возможности
