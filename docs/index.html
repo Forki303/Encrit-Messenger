@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encrit Messenger — Your messages. Your rules.</title>
+    <link rel="icon" href="../Encrit.png" type="image/png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="container nav-container">
+        <a href="#" class="logo">
+            <img src="../Encrit.png" alt="Encrit" class="logo-img">
+            <span class="logo-text">Encrit</span>
+        </a>
+        <div class="nav-links">
+            <a href="#features">Возможности</a>
+            <a href="#how-it-works">Как работает</a>
+            <a href="#security">Безопасность</a>
+            <a href="#download">Скачать</a>
+        </div>
+        <a href="#download" class="btn btn-accent nav-btn">Скачать</a>
+        <button class="burger" id="burger" aria-label="Меню">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+    <a href="#features">Возможности</a>
+    <a href="#how-it-works">Как работает</a>
+    <a href="#security">Безопасность</a>
+    <a href="#download">Скачать</a>
+</div>
+
+<section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container hero-content">
+        <div class="hero-text">
+            <div class="badge">Открытый исходный код</div>
+            <h1>Encrit <span class="accent">Messenger</span></h1>
+            <p class="hero-subtitle">Ваши сообщения. Ваши правила.</p>
+            <p class="hero-desc">Зашифрованный мессенджер с локальным сервером. Ваши данные никогда не покидают вашу сеть.</p>
+            <div class="hero-buttons">
+                <a href="#download" class="btn btn-accent btn-lg">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Скачать бесплатно
+                </a>
+                <a href="https://github.com/Forki303/Encrit-Messenger" class="btn btn-outline btn-lg" target="_blank">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    GitHub
+                </a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="app-mockup">
+                <div class="mockup-header">
+                    <div class="mockup-dots">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                    </div>
+                    <span class="mockup-title">Encrit Messenger</span>
+                </div>
+                <div class="mockup-body">
+                    <div class="mockup-sidebar">
+                        <div class="sidebar-logo">Encrit</div>
+                        <div class="sidebar-item active">Общий чат</div>
+                        <div class="sidebar-item">Приватный</div>
+                        <div class="sidebar-status">
+                            <span class="status-dot"></span> Подключено
+                        </div>
+                    </div>
+                    <div class="mockup-chat">
+                        <div class="chat-msg">
+                            <span class="msg-author">Алиса:</span>
+                            <span class="msg-text">Привет! Как дела?</span>
+                        </div>
+                        <div class="chat-msg">
+                            <span class="msg-author">Боб:</span>
+                            <span class="msg-text">Отлично, спасибо! </span>
+                        </div>
+                        <div class="chat-msg own">
+                            <span class="msg-author">Вы:</span>
+                            <span class="msg-text">Всё зашифровано!</span>
+                        </div>
+                        <div class="chat-msg">
+                            <span class="msg-author">Система:</span>
+                            <span class="msg-text sys">Новое подключение...</span>
+                        </div>
+                        <div class="chat-input-mockup">
+                            <span>Введите сообщение...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p class="mockup-note">* Интерфейс показанный выше — прототип, приложение ещё разрабатывается и может выглядеть иначе.</p>
+    </div>
+</section>
+
+<section class="features" id="features">
+    <div class="container">
+        <h2 class="section-title">Возможности</h2>
+        <p class="section-subtitle">Всё что нужно для безопасного общения</p>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </div>
+                <h3>End-to-End шифрование</h3>
+                <p>Все сообщения зашифрованы на стороне отправителя и расшифровываются только на стороне получателя.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+                </div>
+                <h3>Локальный сервер</h3>
+                <p>Данные никогда не уходят в облако. Сервер работает на одном из участников чата.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <h3>Защита паролем</h3>
+                <p>Только люди с паролем могут подключиться и прочитать сообщения.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                </div>
+                <h3>Простой интерфейс</h3>
+                <p>Интуитивно понятный дизайн. Ничего лишнего — только общение.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <h3>Мультичат</h3>
+                <p>Подключайтесь к существующим чатам или создавайте свои. Общайтесь с несколькими людьми одновременно.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                </div>
+                <h3>Кроссплатформенность</h3>
+                <p>Работает на Windows и Linux. Скачайте и запустите — никакой установки не требуется.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="how-it-works" id="how-it-works">
+    <div class="container">
+        <h2 class="section-title">Как это работает</h2>
+        <p class="section-subtitle">Три простых шага к безопасному общению</p>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Настройте профиль</h3>
+                <p>Задайте никнейм и пароль в боковой панели приложения.</p>
+            </div>
+            <div class="step-connector"></div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>Создайте или подключитесь</h3>
+                <p>Нажмите <strong>Start Server</strong> чтобы создать чат, или <strong>Connect</strong> чтобы подключиться по IP и порту.</p>
+            </div>
+            <div class="step-connector"></div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Общайтесь безопасно</h3>
+                <p>Все сообщения шифруются автоматически. Сервер видит только зашифрованные данные.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="security" id="security">
+    <div class="container">
+        <div class="security-content">
+            <div class="security-text">
+                <h2 class="section-title left">Безопасность — наш приоритет</h2>
+                <p class="security-desc">Encrit Messenger использует проверенные криптографические алгоритмы для защиты ваших сообщений.</p>
+                <ul class="security-list">
+                    <li>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        Шифрование на базе <strong>PBKDF2 + HMAC-SHA256</strong>
+                    </li>
+                    <li>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        Пароль <strong>никогда</strong> не передаётся по сети
+                    </li>
+                    <li>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        Сервер <strong>не имеет доступа</strong> к расшифрованным сообщениям
+                    </li>
+                    <li>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        Данные <strong>не покидают</strong> вашу локальную сеть
+                    </li>
+                </ul>
+            </div>
+            <div class="security-visual">
+                <div class="shield-animation">
+                    <svg class="shield-icon" width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="1.5">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                    <div class="shield-pulse"></div>
+                    <div class="shield-pulse delay"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="structure" id="structure">
+    <div class="container">
+        <h2 class="section-title">Структура проекта</h2>
+        <p class="section-subtitle">Чистый и понятный код</p>
+        <div class="code-block">
+            <pre><code>Encrit-Messenger/
+├── main.py      <span class="code-comment"># Точка входа</span>
+├── gui.py       <span class="code-comment"># Интерфейс (tkinter)</span>
+├── crypto.py    <span class="code-comment"># Шифрование и расшифровка</span>
+├── network.py   <span class="code-comment"># Сетевая часть (клиент/сервер)</span>
+└── Encrit.png   <span class="code-comment"># Иконка приложения</span></code></pre>
+        </div>
+    </div>
+</section>
+
+<section class="download" id="download">
+    <div class="container">
+        <h2 class="section-title">Скачать Encrit Messenger</h2>
+        <p class="section-subtitle">Бесплатно. Без регистрации. Без установки.</p>
+        <div class="download-cards">
+            <div class="download-card">
+                <div class="download-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+                </div>
+                <h3>Windows</h3>
+                <p class="download-file">Encrit Messenger.exe</p>
+                <p class="download-desc">Windows 10/11 — просто запустите файл</p>
+                <a href="https://github.com/Forki303/Encrit-Messenger/releases" class="btn btn-accent btn-lg" target="_blank">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Скачать для Windows
+                </a>
+            </div>
+            <div class="download-card">
+                <div class="download-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                </div>
+                <h3>Linux</h3>
+                <p class="download-file">Encrit Messenger</p>
+                <p class="download-desc">Исполняемый файл — chmod +x и запускайте</p>
+                <a href="https://github.com/Forki303/Encrit-Messenger/releases" class="btn btn-accent btn-lg" target="_blank">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Скачать для Linux
+                </a>
+            </div>
+        </div>
+        <div class="build-from-source">
+            <h3>Или соберите вручную</h3>
+            <div class="code-block">
+                <pre><code>git clone https://github.com/Forki303/Encrit-Messenger.git
+cd Encrit-Messenger
+pip install -r requirements.txt
+pyinstaller --noconsole --onefile --name "Encrit Messenger" --icon Encrit.png main.py</code></pre>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="container footer-content">
+        <div class="footer-left">
+            <a href="#" class="logo">
+                <img src="../Encrit.png" alt="Encrit" class="logo-img">
+                <span class="logo-text">Encrit Messenger</span>
+            </a>
+            <p class="footer-tagline">Your messages. Your rules.</p>
+        </div>
+        <div class="footer-links">
+            <a href="https://github.com/Forki303/Encrit-Messenger" target="_blank">GitHub</a>
+            <a href="#" id="telegramLink">Telegram</a>
+            <a href="#features">Возможности</a>
+            <a href="#download">Скачать</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <div class="container">
+            <p>Encrit Messenger — открытый проект. Используйте свободно.</p>
+        </div>
+    </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
