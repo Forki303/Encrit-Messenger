@@ -1,9 +1,16 @@
-import tkinter as tk
-from tkinter import ttk, messagebox
+import os
+import sys
 import threading
-import time
-import traceback
 from datetime import datetime
+
+from PySide6.QtWidgets import (
+    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
+    QLabel, QLineEdit, QPushButton, QTextEdit, QFrame, QSplitter,
+    QSizePolicy, QGraphicsDropShadowEffect
+)
+from PySide6.QtCore import Qt, Signal, QObject, QTimer
+from PySide6.QtGui import QFont, QColor, QTextCursor, QIcon
+
 from crypto import encrypt, decrypt
 from network import MessageServer, MessageClient
 
@@ -11,27 +18,212 @@ from network import MessageServer, MessageClient
 BG = "#1a1a2e"
 BG_SECONDARY = "#16213e"
 BG_INPUT = "#0f3460"
+BG_INPUT_FOCUS = "#1a4a7a"
 FG = "#e0e0e0"
 FG_DIM = "#888888"
 ACCENT = "#0ea5e9"
 ACCENT_HOVER = "#38bdf8"
+ACCENT_PRESSED = "#0284c7"
 RED = "#ef4444"
 GREEN = "#22c55e"
 YELLOW = "#eab308"
 CYAN = "#06b6d4"
-FONT_MONO = ("Consolas", 12)
-FONT_LABEL = ("Segoe UI", 10)
-FONT_TITLE = ("Segoe UI", 14, "bold")
-FONT_SUBTITLE = ("Segoe UI", 9)
+BORDER_COLOR = "#1e3a5f"
+SHADOW_COLOR = "rgba(0, 0, 0, 40)"
+
+SIDEBAR_WIDTH = 260
+
+STYLE_SHEET = f"""
+QMainWindow {{
+    background-color: {BG};
+}}
+
+QWidget#centralWidget {{
+    background-color: {BG};
+}}
+
+QFrame#sidebar {{
+    background-color: {BG_SECONDARY};
+    border-right: 1px solid {BORDER_COLOR};
+}}
+
+QFrame#chatArea {{
+    background-color: {BG};
+}}
+
+QLineEdit {{
+    background-color: {BG_INPUT};
+    color: {FG};
+    border: 1px solid {BORDER_COLOR};
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-family: 'Segoe UI', 'Cantarell', sans-serif;
+    font-size: 13px;
+    selection-background-color: {ACCENT};
+}}
+
+QLineEdit:focus {{
+    border: 1px solid {ACCENT};
+    background-color: {BG_INPUT_FOCUS};
+}}
+
+QLineEdit#messageInput {{
+    background-color: {BG_INPUT};
+    border: 1px solid {BORDER_COLOR};
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-family: 'Segoe UI', 'Cantarell', sans-serif;
+}}
+
+QLineEdit#messageInput:focus {{
+    border: 1px solid {ACCENT};
+    background-color: {BG_INPUT_FOCUS};
+}}
+
+QPushButton {{
+    border: none;
+    border-radius: 8px;
+    font-family: 'Segoe UI', 'Cantarell', sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+    padding: 10px 16px;
+}}
+
+QPushButton#btnServer {{
+    background-color: {ACCENT};
+    color: #ffffff;
+}}
+QPushButton#btnServer:hover {{
+    background-color: {ACCENT_HOVER};
+}}
+QPushButton#btnServer:pressed {{
+    background-color: {ACCENT_PRESSED};
+}}
+
+QPushButton#btnConnect {{
+    background-color: {GREEN};
+    color: #ffffff;
+}}
+QPushButton#btnConnect:hover {{
+    background-color: #16a34a;
+}}
+QPushButton#btnConnect:pressed {{
+    background-color: #15803d;
+}}
+
+QPushButton#btnDisconnect {{
+    background-color: #333333;
+    color: {FG};
+}}
+QPushButton#btnDisconnect:hover {{
+    background-color: #444444;
+}}
+QPushButton#btnDisconnect:pressed {{
+    background-color: #555555;
+}}
+
+QPushButton#btnClear {{
+    background-color: transparent;
+    color: {FG_DIM};
+    border: 1px solid {BORDER_COLOR};
+}}
+QPushButton#btnClear:hover {{
+    background-color: {BG_INPUT};
+    color: {FG};
+    border-color: {FG_DIM};
+}}
+
+QPushButton#btnSend {{
+    background-color: {ACCENT};
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 10px 24px;
+    border-radius: 10px;
+}}
+QPushButton#btnSend:hover {{
+    background-color: {ACCENT_HOVER};
+}}
+QPushButton#btnSend:pressed {{
+    background-color: {ACCENT_PRESSED};
+}}
+
+QTextEdit#chatDisplay {{
+    background-color: {BG};
+    color: {FG};
+    border: none;
+    font-family: 'Cascadia Code', 'Consolas', 'Courier New', monospace;
+    font-size: 13px;
+    padding: 16px;
+    selection-background-color: {ACCENT};
+}}
+
+QScrollBar:vertical {{
+    background-color: {BG_SECONDARY};
+    width: 8px;
+    border: none;
+}}
+
+QScrollBar::handle:vertical {{
+    background-color: #2a3a5a;
+    border-radius: 4px;
+    min-height: 30px;
+}}
+
+QScrollBar::handle:vertical:hover {{
+    background-color: #3a4a6a;
+}}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{
+    height: 0px;
+}}
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {{
+    background: none;
+}}
+
+QLabel#titleLabel {{
+    color: {FG};
+    font-family: 'Segoe UI', 'Cantarell', sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+}}
+
+QLabel#subtitleLabel {{
+    color: {FG_DIM};
+    font-family: 'Segoe UI', 'Cantarell', sans-serif;
+    font-size: 11px;
+}}
+
+QLabel#fieldLabel {{
+    color: {FG_DIM};
+    font-family: 'Segoe UI', 'Cantarell', sans-serif;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}}
+
+QLabel#statusLabel {{
+    color: {RED};
+    font-family: 'Segoe UI', 'Cantarell', sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+}}
+"""
+
+
+class Signals(QObject):
+    log_signal = Signal(str, str, str)
+    status_signal = Signal(str, str)
 
 
 class EncritApp:
     def __init__(self):
-        self.root = tk.Tk()
-        self.root.title("Encrit Messenger")
-        self.root.geometry("950x620")
-        self.root.minsize(700, 480)
-        self.root.configure(bg=BG)
+        self.app = QApplication(sys.argv)
+        self.app.setStyleSheet(STYLE_SHEET)
+        self.app.setFont(QFont("Segoe UI", 10))
 
         self._server: MessageServer | None = None
         self._client: MessageClient | None = None
@@ -40,176 +232,229 @@ class EncritApp:
         self._is_server = False
         self._my_client_id: str = ""
 
+        self._signals = Signals()
+        self._signals.log_signal.connect(self._on_log)
+        self._signals.status_signal.connect(self._on_status)
+
         self._build_ui()
 
     def _build_ui(self):
-        style = ttk.Style()
-        style.theme_use("clam")
+        self.window = QMainWindow()
+        self.window.setWindowTitle("Encrit Messenger")
+        self.window.setMinimumSize(780, 520)
+        self.window.resize(1000, 650)
 
-        style.configure("Dark.TFrame", background=BG)
-        style.configure("Secondary.TFrame", background=BG_SECONDARY)
-        style.configure("Dark.TLabel", background=BG, foreground=FG, font=FONT_LABEL)
-        style.configure("Dim.TLabel", background=BG, foreground=FG_DIM, font=FONT_SUBTITLE)
-        style.configure("Title.TLabel", background=BG, foreground=FG, font=FONT_TITLE)
-        style.configure("Green.TLabel", background=BG, foreground=GREEN, font=FONT_LABEL)
-        style.configure("Red.TLabel", background=BG, foreground=RED, font=FONT_LABEL)
+        if getattr(sys, 'frozen', False):
+            base_path = sys._MEIPASS
+        else:
+            base_path = os.path.dirname(os.path.abspath(__file__))
+        icon_path = os.path.join(base_path, "Encrit.png")
+        if os.path.exists(icon_path):
+            self.window.setWindowIcon(QIcon(icon_path))
 
-        style.configure("Accent.TButton", background=ACCENT, foreground="#fff",
-                         font=("Segoe UI", 10, "bold"), borderwidth=0, padding=(12, 6))
-        style.map("Accent.TButton", background=[("active", ACCENT_HOVER)])
+        central = QWidget()
+        central.setObjectName("centralWidget")
+        self.window.setCentralWidget(central)
 
-        style.configure("Dark.TButton", background="#333", foreground=FG,
-                         font=FONT_LABEL, borderwidth=0, padding=(12, 6))
-        style.map("Dark.TButton", background=[("active", "#444")])
+        main_layout = QHBoxLayout(central)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(0)
 
-        style.configure("Dark.TEntry", fieldbackground=BG_INPUT, foreground=FG,
-                         insertcolor=FG, borderwidth=1, relief="flat")
+        splitter = QSplitter(Qt.Horizontal)
+        splitter.setHandleWidth(0)
+        splitter.setStyleSheet("QSplitter::handle { background-color: transparent; }")
 
-        sidebar = tk.Frame(self.root, bg=BG_SECONDARY, width=220)
-        sidebar.pack(side="left", fill="y")
-        sidebar.pack_propagate(False)
+        sidebar = self._build_sidebar()
+        chat = self._build_chat()
 
-        tk.Label(sidebar, text="Encrit", bg=BG_SECONDARY, fg=FG,
-                 font=("Segoe UI", 20, "bold")).pack(pady=(25, 2))
-        tk.Label(sidebar, text="Encrypted Messenger", bg=BG_SECONDARY, fg=FG_DIM,
-                 font=FONT_SUBTITLE).pack(pady=(0, 20))
+        splitter.addWidget(sidebar)
+        splitter.addWidget(chat)
+        splitter.setStretchFactor(0, 0)
+        splitter.setStretchFactor(1, 1)
+        splitter.setSizes([SIDEBAR_WIDTH, 740])
 
-        tk.Label(sidebar, text="Nickname:", bg=BG_SECONDARY, fg=FG_DIM,
-                 font=FONT_LABEL, anchor="w").pack(padx=15, pady=(5, 2), fill="x")
-        self._nick_entry = tk.Entry(sidebar, bg=BG_INPUT, fg=FG,
-                                     insertbackground=FG, font=FONT_MONO,
-                                     relief="flat", bd=0)
-        self._nick_entry.pack(padx=15, pady=(0, 8), fill="x", ipady=5)
-        self._nick_entry.insert(0, self._nickname)
+        main_layout.addWidget(splitter)
 
-        tk.Label(sidebar, text="Password:", bg=BG_SECONDARY, fg=FG_DIM,
-                 font=FONT_LABEL, anchor="w").pack(padx=15, pady=(5, 2), fill="x")
-        self._password_entry = tk.Entry(sidebar, bg=BG_INPUT, fg=FG,
-                                         insertbackground=FG, font=FONT_MONO,
-                                         show="*", relief="flat", bd=0)
-        self._password_entry.pack(padx=15, pady=(0, 8), fill="x", ipady=5)
-        self._password_entry.insert(0, self._password)
+    def _build_sidebar(self) -> QFrame:
+        sidebar = QFrame()
+        sidebar.setObjectName("sidebar")
+        sidebar.setFixedWidth(SIDEBAR_WIDTH)
 
-        tk.Label(sidebar, text="Host:", bg=BG_SECONDARY, fg=FG_DIM,
-                 font=FONT_LABEL, anchor="w").pack(padx=15, pady=(5, 2), fill="x")
-        self._host_entry = tk.Entry(sidebar, bg=BG_INPUT, fg=FG,
-                                     insertbackground=FG, font=FONT_MONO,
-                                     relief="flat", bd=0)
-        self._host_entry.pack(padx=15, pady=(0, 8), fill="x", ipady=5)
-        self._host_entry.insert(0, "0.0.0.0")
+        layout = QVBoxLayout(sidebar)
+        layout.setContentsMargins(20, 24, 20, 20)
+        layout.setSpacing(0)
 
-        tk.Label(sidebar, text="Port:", bg=BG_SECONDARY, fg=FG_DIM,
-                 font=FONT_LABEL, anchor="w").pack(padx=15, pady=(5, 2), fill="x")
-        self._port_entry = tk.Entry(sidebar, bg=BG_INPUT, fg=FG,
-                                     insertbackground=FG, font=FONT_MONO,
-                                     relief="flat", bd=0)
-        self._port_entry.pack(padx=15, pady=(0, 8), fill="x", ipady=5)
-        self._port_entry.insert(0, "9000")
+        title = QLabel("Encrit")
+        title.setObjectName("titleLabel")
+        layout.addWidget(title)
 
-        self._status_label = tk.Label(sidebar, text="Disconnected", bg=BG_SECONDARY,
-                                       fg=RED, font=FONT_LABEL)
-        self._status_label.pack(padx=15, pady=(15, 5))
+        subtitle = QLabel("Encrypted Messenger")
+        subtitle.setObjectName("subtitleLabel")
+        layout.addWidget(subtitle)
 
-        btn_frame = tk.Frame(sidebar, bg=BG_SECONDARY)
-        btn_frame.pack(padx=15, pady=(5, 0), fill="x")
+        layout.addSpacing(28)
 
-        self._server_btn = tk.Button(btn_frame, text="Start Server", bg=ACCENT, fg="#fff",
-                                      activebackground=ACCENT_HOVER, activeforeground="#fff",
-                                      font=("Segoe UI", 10, "bold"), relief="flat", bd=0,
-                                      cursor="hand2", command=self._start_server)
-        self._server_btn.pack(fill="x", ipady=5, pady=(0, 5))
+        for label_text, attr_name, default, is_password in [
+            ("NICKNAME", "_nick_entry", "User", False),
+            ("PASSWORD", "_password_entry", "encrit_default_key", True),
+            ("HOST", "_host_entry", "0.0.0.0", False),
+            ("PORT", "_port_entry", "9000", False),
+        ]:
+            lbl = QLabel(label_text)
+            lbl.setObjectName("fieldLabel")
+            layout.addWidget(lbl)
+            layout.addSpacing(4)
 
-        self._connect_btn = tk.Button(btn_frame, text="Connect", bg="#22c55e", fg="#fff",
-                                       activebackground="#16a34a", activeforeground="#fff",
-                                       font=("Segoe UI", 10, "bold"), relief="flat", bd=0,
-                                       cursor="hand2", command=self._connect)
-        self._connect_btn.pack(fill="x", ipady=5, pady=(0, 5))
+            entry = QLineEdit()
+            entry.setText(default)
+            if is_password:
+                entry.setEchoMode(QLineEdit.Password)
+            setattr(self, attr_name, entry)
+            layout.addWidget(entry)
+            layout.addSpacing(12)
 
-        self._disconnect_btn = tk.Button(btn_frame, text="Disconnect", bg="#555", fg="#fff",
-                                          activebackground="#666", activeforeground="#fff",
-                                          font=FONT_LABEL, relief="flat", bd=0,
-                                          cursor="hand2", command=self._disconnect)
-        self._disconnect_btn.pack(fill="x", ipady=5, pady=(0, 5))
+        self._status_label = QLabel("Disconnected")
+        self._status_label.setObjectName("statusLabel")
+        layout.addWidget(self._status_label)
 
-        self._clear_btn = tk.Button(btn_frame, text="Clear Chat", bg="#444", fg="#aaa",
-                                     activebackground="#555", activeforeground="#fff",
-                                     font=FONT_LABEL, relief="flat", bd=0,
-                                     cursor="hand2", command=self._clear_chat)
-        self._clear_btn.pack(fill="x", ipady=5, pady=(10, 0))
+        layout.addStretch()
 
-        chat_frame = tk.Frame(self.root, bg=BG)
-        chat_frame.pack(side="right", fill="both", expand=True)
+        shadow_style = f"""
+            QPushButton {{
+                min-height: 38px;
+            }}
+        """
 
-        self._chat_display = tk.Text(chat_frame, bg=BG, fg=FG, insertbackground=FG,
-                                      font=FONT_MONO, wrap="word", relief="flat", bd=0,
-                                      padx=12, pady=12, state="disabled",
-                                      selectbackground=ACCENT, selectforeground="#fff")
-        self._chat_display.pack(fill="both", expand=True, padx=(1, 0), pady=(5, 0))
+        self._server_btn = QPushButton("Start Server")
+        self._server_btn.setObjectName("btnServer")
+        self._server_btn.setCursor(Qt.PointingHandCursor)
+        self._server_btn.clicked.connect(self._start_server)
+        layout.addWidget(self._server_btn)
+        layout.addSpacing(6)
 
-        scrollbar = tk.Scrollbar(self._chat_display, command=self._chat_display.yview)
-        scrollbar.pack(side="right", fill="y")
-        self._chat_display.configure(yscrollcommand=scrollbar.set)
+        self._connect_btn = QPushButton("Connect")
+        self._connect_btn.setObjectName("btnConnect")
+        self._connect_btn.setCursor(Qt.PointingHandCursor)
+        self._connect_btn.clicked.connect(self._connect)
+        layout.addWidget(self._connect_btn)
+        layout.addSpacing(6)
 
-        self._chat_display.tag_configure("sender", foreground=ACCENT)
-        self._chat_display.tag_configure("sys", foreground=FG_DIM)
-        self._chat_display.tag_configure("err", foreground=RED)
-        self._chat_display.tag_configure("ok", foreground=GREEN)
-        self._chat_display.tag_configure("msg", foreground=FG)
-        self._chat_display.tag_configure("time", foreground="#555")
-        self._chat_display.tag_configure("you", foreground=YELLOW)
+        self._disconnect_btn = QPushButton("Disconnect")
+        self._disconnect_btn.setObjectName("btnDisconnect")
+        self._disconnect_btn.setCursor(Qt.PointingHandCursor)
+        self._disconnect_btn.clicked.connect(self._disconnect)
+        layout.addWidget(self._disconnect_btn)
+        layout.addSpacing(6)
 
-        input_frame = tk.Frame(chat_frame, bg=BG)
-        input_frame.pack(fill="x", padx=5, pady=(2, 10))
+        self._clear_btn = QPushButton("Clear Chat")
+        self._clear_btn.setObjectName("btnClear")
+        self._clear_btn.setCursor(Qt.PointingHandCursor)
+        self._clear_btn.clicked.connect(self._clear_chat)
+        layout.addWidget(self._clear_btn)
 
-        self._message_entry = tk.Entry(input_frame, bg=BG_INPUT, fg=FG,
-                                        insertbackground=FG, font=("Segoe UI", 13),
-                                        relief="flat", bd=0)
-        self._message_entry.pack(side="left", fill="x", expand=True, ipady=8, padx=(0, 10))
-        self._message_entry.bind("<Return>", lambda e: self._send_message())
+        return sidebar
 
-        self._send_btn = tk.Button(input_frame, text="Send  >>", bg=ACCENT, fg="#fff",
-                                    activebackground=ACCENT_HOVER, activeforeground="#fff",
-                                    font=("Segoe UI", 11, "bold"), relief="flat", bd=0,
-                                    cursor="hand2", command=self._send_message)
-        self._send_btn.pack(side="right", ipady=4, padx=(0, 5))
+    def _build_chat(self) -> QFrame:
+        chat_frame = QFrame()
+        chat_frame.setObjectName("chatArea")
+
+        layout = QVBoxLayout(chat_frame)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+
+        self._chat_display = QTextEdit()
+        self._chat_display.setObjectName("chatDisplay")
+        self._chat_display.setReadOnly(True)
+        self._chat_display.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self._chat_display.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self._chat_display.setFrameShape(QFrame.NoFrame)
+        layout.addWidget(self._chat_display, 1)
+
+        input_frame = QFrame()
+        input_frame.setStyleSheet("background-color: transparent;")
+        input_layout = QHBoxLayout(input_frame)
+        input_layout.setContentsMargins(16, 8, 16, 16)
+        input_layout.setSpacing(10)
+
+        self._message_entry = QLineEdit()
+        self._message_entry.setObjectName("messageInput")
+        self._message_entry.setPlaceholderText("Type your message...")
+        self._message_entry.returnPressed.connect(self._send_message)
+        input_layout.addWidget(self._message_entry, 1)
+
+        self._send_btn = QPushButton("Send  \u27a1")
+        self._send_btn.setObjectName("btnSend")
+        self._send_btn.setCursor(Qt.PointingHandCursor)
+        self._send_btn.clicked.connect(self._send_message)
+        input_layout.addWidget(self._send_btn)
+
+        layout.addWidget(input_frame)
+
+        return chat_frame
 
     def _log(self, sender: str, text: str, tag: str = "msg"):
         timestamp = datetime.now().strftime("%H:%M:%S")
-        self._chat_display.configure(state="normal")
-        self._chat_display.insert("end", f"[{timestamp}] ", "time")
-        self._chat_display.insert("end", f"{sender}: ", "sender" if tag not in ("sys", "you") else tag)
-        self._chat_display.insert("end", f"{text}\n", tag)
-        self._chat_display.configure(state="disabled")
-        self._chat_display.see("end")
+
+        tag_colors = {
+            "sender": ACCENT,
+            "sys": FG_DIM,
+            "err": RED,
+            "ok": GREEN,
+            "msg": FG,
+            "time": "#555555",
+            "you": YELLOW,
+        }
+
+        sender_color = tag_colors.get(tag, FG)
+        if tag not in ("sys", "you"):
+            sender_color = ACCENT
+
+        time_html = f'<span style="color:#555555;">[{timestamp}] </span>'
+        sender_html = f'<span style="color:{sender_color}; font-weight:bold;">{self._escape_html(sender)}: </span>'
+        msg_html = f'<span style="color:{tag_colors.get(tag, FG)};">{self._escape_html(text)}</span>'
+
+        self._chat_display.append(time_html + sender_html + msg_html)
+        scrollbar = self._chat_display.verticalScrollBar()
+        scrollbar.setValue(scrollbar.maximum())
+
+    def _escape_html(self, text: str) -> str:
+        return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\n", "<br>")
+
+    def _on_log(self, sender: str, text: str, tag: str):
+        self._log(sender, text, tag)
+
+    def _on_status(self, text: str, color: str):
+        self._status_label.setText(text)
+        self._status_label.setStyleSheet(f"color: {color}; font-family: 'Segoe UI', sans-serif; font-size: 12px; font-weight: bold;")
 
     def _schedule(self, func, *args):
-        self.root.after(0, func, *args)
+        self._signals.log_signal.emit(*args) if func == self._log else None
 
     def _start_server(self):
-        host = self._host_entry.get().strip() or "0.0.0.0"
+        host = self._host_entry.text().strip() or "0.0.0.0"
         try:
-            port = int(self._port_entry.get().strip() or "9000")
+            port = int(self._port_entry.text().strip() or "9000")
         except ValueError:
-            self._status_label.configure(text="Invalid port!", fg=RED)
+            self._signals.status_signal.emit("Invalid port!", RED)
             return
 
-        self._password = self._password_entry.get() or "encrit_default_key"
-        self._nickname = self._nick_entry.get().strip() or "Server"
+        self._password = self._password_entry.text() or "encrit_default_key"
+        self._nickname = self._nick_entry.text().strip() or "Server"
         self._is_server = True
         self._my_client_id = "SERVER"
         self._server = MessageServer(host, port, self._on_server_message)
         self._server.start()
-        self._status_label.configure(text=f"Server: {host}:{port}", fg=GREEN)
-        self._log("SYSTEM", f"Server started on {host}:{port} as \"{self._nickname}\"", "ok")
+        self._signals.status_signal.emit(f"Server: {host}:{port}", GREEN)
+        self._signals.log_signal.emit("SYSTEM", f"Server started on {host}:{port} as \"{self._nickname}\"", "ok")
 
     def _on_server_message(self, client_id: str, nickname: str, sender_addr: str, raw: str):
         pwd = self._password
         try:
             decrypted = decrypt(bytes.fromhex(raw), pwd)
-            self._schedule(self._log, f"{nickname}", decrypted)
+            self._signals.log_signal.emit(f"{nickname}", decrypted, "msg")
         except Exception as e:
-            self._schedule(self._log, "DEBUG", f"raw={raw[:80]}  err={e}", "err")
-            self._schedule(self._log, f"{nickname} [{sender_addr}]", "[decryption failed]", "err")
+            self._signals.log_signal.emit("DEBUG", f"raw={raw[:80]}  err={e}", "err")
+            self._signals.log_signal.emit(f"{nickname} [{sender_addr}]", "[decryption failed]", "err")
 
         if self._server:
             try:
@@ -218,25 +463,25 @@ class EncritApp:
                 pass
 
     def _connect(self):
-        host = self._host_entry.get().strip() or "127.0.0.1"
+        host = self._host_entry.text().strip() or "127.0.0.1"
         try:
-            port = int(self._port_entry.get().strip() or "9000")
+            port = int(self._port_entry.text().strip() or "9000")
         except ValueError:
-            self._status_label.configure(text="Invalid port!", fg=RED)
+            self._signals.status_signal.emit("Invalid port!", RED)
             return
 
-        self._password = self._password_entry.get() or "encrit_default_key"
-        self._nickname = self._nick_entry.get().strip() or "User"
+        self._password = self._password_entry.text() or "encrit_default_key"
+        self._nickname = self._nick_entry.text().strip() or "User"
         self._is_server = False
         self._client = MessageClient(self._on_client_message)
         try:
             self._client.connect(host, port)
             self._my_client_id = self._client.client_id
-            self._schedule(lambda: self._status_label.configure(text=f"Connected: {host}:{port}", fg=GREEN))
-            self._schedule(self._log, "SYSTEM", f"Connected as \"{self._nickname}\" (id: {self._my_client_id})", "ok")
+            self._signals.status_signal.emit(f"Connected: {host}:{port}", GREEN)
+            self._signals.log_signal.emit("SYSTEM", f"Connected as \"{self._nickname}\" (id: {self._my_client_id})", "ok")
         except Exception as e:
-            self._schedule(lambda: self._status_label.configure(text="Connection failed!", fg=RED))
-            self._schedule(self._log, "SYSTEM", f"Connection failed: {e}", "err")
+            self._signals.status_signal.emit("Connection failed!", RED)
+            self._signals.log_signal.emit("SYSTEM", f"Connection failed: {e}", "err")
 
     def _on_client_message(self, sender_id: str, nickname: str, raw: str):
         if sender_id == self._my_client_id:
@@ -244,23 +489,23 @@ class EncritApp:
         pwd = self._password
         try:
             decrypted = decrypt(bytes.fromhex(raw), pwd)
-            self._schedule(self._log, nickname, decrypted)
+            self._signals.log_signal.emit(nickname, decrypted, "msg")
         except Exception as e:
-            self._schedule(self._log, "DEBUG", f"raw={raw[:80]}  err={e}", "err")
-            self._schedule(self._log, f"{nickname}", "[decryption failed]", "err")
+            self._signals.log_signal.emit("DEBUG", f"raw={raw[:80]}  err={e}", "err")
+            self._signals.log_signal.emit(f"{nickname}", "[decryption failed]", "err")
 
     def _send_message(self):
-        msg = self._message_entry.get().strip()
+        msg = self._message_entry.text().strip()
         if not msg:
             return
-        self._message_entry.delete(0, "end")
+        self._message_entry.clear()
 
-        self._password = self._password_entry.get() or "encrit_default_key"
-        self._nickname = self._nick_entry.get().strip() or "User"
+        self._password = self._password_entry.text() or "encrit_default_key"
+        self._nickname = self._nick_entry.text().strip() or "User"
         encrypted = encrypt(msg, self._password)
         payload = encrypted.hex()
 
-        self._log("You", msg, "you")
+        self._signals.log_signal.emit("You", msg, "you")
 
         try:
             if self._is_server and self._server:
@@ -268,7 +513,7 @@ class EncritApp:
             elif self._client:
                 self._client.send(self._nickname, payload)
         except Exception as e:
-            self._log("SYSTEM", f"Send failed: {e}", "err")
+            self._signals.log_signal.emit("SYSTEM", f"Send failed: {e}", "err")
 
     def _disconnect(self):
         if self._server:
@@ -278,21 +523,15 @@ class EncritApp:
             self._client.disconnect()
             self._client = None
         self._my_client_id = ""
-        self._status_label.configure(text="Disconnected", fg=RED)
-        self._log("SYSTEM", "Disconnected", "sys")
+        self._signals.status_signal.emit("Disconnected", RED)
+        self._signals.log_signal.emit("SYSTEM", "Disconnected", "sys")
 
     def _clear_chat(self):
-        self._chat_display.configure(state="normal")
-        self._chat_display.delete("1.0", "end")
-        self._chat_display.configure(state="disabled")
+        self._chat_display.clear()
 
     def run(self):
-        self.root.protocol("WM_DELETE_WINDOW", self._on_close)
-        self.root.mainloop()
-
-    def _on_close(self):
-        self._disconnect()
-        self.root.destroy()
+        self.window.show()
+        sys.exit(self.app.exec())
 
 
 if __name__ == "__main__":
