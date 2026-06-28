@@ -36,7 +36,7 @@ No additional installation required.
 git clone https://github.com/Forki303/Encrit-Messenger.git
 cd Encrit-Messenger
 pip install -r requirements.txt
-pyinstaller --noconsole --onefile --name "Encrit Messenger" --icon Encrit.png main.py
+pyinstaller --noconsole --onefile --name "Encrit Messenger" --icon Encrit.png --add-data="Encrit.png:." main.py
 ```
 
 The built file will appear in the `dist/` folder.
@@ -63,8 +63,11 @@ The built file will appear in the `dist/` folder.
 ## Project Structure
 
 ```
-├── main.py      # Entry point
-├── gui.py       # User interface (tkinter)
-├── crypto.py    # Encryption and decryption
-└── network.py   # Network layer (client/server)
+├── main.py          # Entry point
+├── gui.py           # User interface (PySide6 / Qt)
+├── crypto.py        # Encryption and decryption
+├── network.py       # Network layer (client/server)
+├── requirements.txt # Dependencies
+├── Encrit.png       # Application icon
+└── docs/            # Project website
 ```
